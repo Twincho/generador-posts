@@ -3,36 +3,272 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Generador de Posts con IA</title>
+  <title>PostIA – Generador de contenido con IA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; min-height: 100vh; padding: 30px 20px; }
-    .container { max-width: 700px; margin: 0 auto; }
-    h1 { text-align: center; color: #1a1a2e; margin-bottom: 8px; font-size: 2rem; }
-    .subtitle { text-align: center; color: #666; margin-bottom: 30px; }
-    .card { background: white; border-radius: 16px; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-bottom: 20px; }
-    label { display: block; font-weight: 600; color: #333; margin-bottom: 6px; margin-top: 18px; }
+    body { font-family: 'Inter', sans-serif; background: #f8f9fc; color: #1a1a2e; }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      padding: 60px 20px 80px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(108,99,255,0.15) 0%, transparent 70%);
+      top: -200px; left: 50%; transform: translateX(-50%);
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(108,99,255,0.2);
+      border: 1px solid rgba(108,99,255,0.4);
+      color: #a89cff;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      letter-spacing: 0.5px;
+    }
+    .hero h1 {
+      font-size: 2.8rem;
+      font-weight: 800;
+      color: white;
+      line-height: 1.2;
+      margin-bottom: 16px;
+    }
+    .hero h1 span { color: #7c73ff; }
+    .hero p {
+      font-size: 1.1rem;
+      color: #94a3b8;
+      max-width: 500px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* BENEFICIOS */
+    .benefits {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      padding: 40px 20px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .benefit-card {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      flex: 1;
+      min-width: 200px;
+      max-width: 260px;
+      text-align: center;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+      border: 1px solid #f0f0f5;
+    }
+    .benefit-card .icon { font-size: 2rem; margin-bottom: 12px; }
+    .benefit-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+    .benefit-card p { font-size: 0.875rem; color: #64748b; line-height: 1.5; }
+
+    /* FORMULARIO */
+    .form-section {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 0 20px 60px;
+    }
+    .form-title {
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 24px;
+      color: #1a1a2e;
+    }
+    .card {
+      background: white;
+      border-radius: 20px;
+      padding: 36px;
+      box-shadow: 0 4px 30px rgba(0,0,0,0.08);
+      border: 1px solid #f0f0f5;
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: #374151;
+      margin-bottom: 8px;
+      margin-top: 20px;
+    }
     label:first-child { margin-top: 0; }
-    input, textarea { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 15px; transition: border 0.2s; }
-    input:focus, textarea:focus { outline: none; border-color: #6c63ff; }
-    textarea { height: 100px; resize: vertical; }
-    .redes { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 6px; }
-    .red-btn { padding: 8px 16px; border: 2px solid #e0e0e0; border-radius: 20px; cursor: pointer; font-size: 14px; background: white; transition: all 0.2s; }
-    .red-btn.activo { border-color: #6c63ff; background: #6c63ff; color: white; }
-    button.generar { width: 100%; padding: 15px; background: linear-gradient(135deg, #6c63ff, #4ecdc4); color: white; border: none; border-radius: 12px; font-size: 17px; font-weight: 700; cursor: pointer; margin-top: 24px; transition: opacity 0.2s; }
-    button.generar:hover { opacity: 0.9; }
-    button.generar:disabled { opacity: 0.6; cursor: not-allowed; }
-    .resultado { background: white; border-radius: 16px; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); white-space: pre-wrap; line-height: 1.7; color: #333; display: none; }
-    .copiar { margin-top: 16px; padding: 10px 20px; background: #f0f2f5; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; }
-    .copiar:hover { background: #e0e0e0; }
-    .loader { text-align: center; color: #6c63ff; font-weight: 600; display: none; padding: 20px; }
+    input, textarea {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      font-size: 15px;
+      font-family: 'Inter', sans-serif;
+      transition: border 0.2s, box-shadow 0.2s;
+      color: #1a1a2e;
+    }
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: #7c73ff;
+      box-shadow: 0 0 0 4px rgba(124,115,255,0.1);
+    }
+    textarea { height: 110px; resize: vertical; }
+    .redes { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+    .red-btn {
+      padding: 10px 18px;
+      border: 2px solid #e5e7eb;
+      border-radius: 50px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      background: white;
+      transition: all 0.2s;
+      font-family: 'Inter', sans-serif;
+    }
+    .red-btn:hover { border-color: #7c73ff; color: #7c73ff; }
+    .red-btn.activo {
+      border-color: #7c73ff;
+      background: #7c73ff;
+      color: white;
+    }
+    button.generar {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #7c73ff, #4ecdc4);
+      color: white;
+      border: none;
+      border-radius: 14px;
+      font-size: 17px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 28px;
+      transition: opacity 0.2s, transform 0.1s;
+      font-family: 'Inter', sans-serif;
+      letter-spacing: 0.3px;
+    }
+    button.generar:hover { opacity: 0.92; transform: translateY(-1px); }
+    button.generar:active { transform: translateY(0); }
+    button.generar:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    /* LOADER */
+    .loader {
+      text-align: center;
+      padding: 30px;
+      display: none;
+    }
+    .loader-dots {
+      display: inline-flex;
+      gap: 6px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .loader-dots span {
+      width: 10px; height: 10px;
+      background: #7c73ff;
+      border-radius: 50%;
+      animation: bounce 1.2s infinite;
+    }
+    .loader-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .loader-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce {
+      0%, 80%, 100% { transform: scale(0.7); opacity: 0.5; }
+      40% { transform: scale(1); opacity: 1; }
+    }
+    .loader p { color: #7c73ff; font-weight: 600; font-size: 15px; }
+
+    /* RESULTADO */
+    .resultado {
+      background: white;
+      border-radius: 20px;
+      padding: 32px;
+      box-shadow: 0 4px 30px rgba(0,0,0,0.08);
+      border: 1px solid #f0f0f5;
+      white-space: pre-wrap;
+      line-height: 1.8;
+      color: #374151;
+      display: none;
+      margin-top: 20px;
+      font-size: 15px;
+    }
+    .resultado-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid #f0f0f5;
+    }
+    .resultado-header h3 { font-size: 1.1rem; font-weight: 700; }
+    .copiar {
+      padding: 10px 20px;
+      background: #f0f0f5;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+      transition: background 0.2s;
+    }
+    .copiar:hover { background: #e0e0ea; }
+
+    /* FOOTER */
+    footer {
+      background: #1a1a2e;
+      color: #64748b;
+      text-align: center;
+      padding: 30px 20px;
+      font-size: 14px;
+    }
+    footer strong { color: #a89cff; }
+    footer a {
+      color: #7c73ff;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    footer a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>✨ Generador de Posts</h1>
-    <p class="subtitle">Creá contenido para tus redes en segundos con IA</p>
 
+  <!-- HERO -->
+  <div class="hero">
+    <div class="badge">✨ Powered by IA</div>
+    <h1>Creá posts que <span>venden</span><br>en segundos</h1>
+    <p>Describí tu negocio y nuestra IA genera contenido listo para publicar en Instagram, Facebook, LinkedIn y más.</p>
+  </div>
+
+  <!-- BENEFICIOS -->
+  <div class="benefits">
+    <div class="benefit-card">
+      <div class="icon">⚡</div>
+      <h3>Ultra rápido</h3>
+      <p>Posts listos en menos de 10 segundos. Sin esperas, sin bloqueos creativos.</p>
+    </div>
+    <div class="benefit-card">
+      <div class="icon">🎯</div>
+      <h3>Personalizado</h3>
+      <p>El contenido se adapta a tu negocio y al tono de cada red social.</p>
+    </div>
+    <div class="benefit-card">
+      <div class="icon">📋</div>
+      <h3>Listo para copiar</h3>
+      <p>Con emojis y hashtags incluidos. Solo copiás y pegás en tus redes.</p>
+    </div>
+  </div>
+
+  <!-- FORMULARIO -->
+  <div class="form-section">
+    <h2 class="form-title">Generá tu contenido ahora</h2>
     <div class="card">
       <label>¿Cuál es tu negocio?</label>
       <input type="text" id="negocio" placeholder="Ej: Cafetería artesanal, Estudio de yoga, Tienda de ropa...">
@@ -48,13 +284,30 @@
         <button class="red-btn" onclick="toggleRed(this, 'Twitter/X')">🐦 Twitter/X</button>
       </div>
 
-      <button class="generar" onclick="generar()">🚀 Generar posts</button>
+      <button class="generar" onclick="generar()">🚀 Generar posts con IA</button>
     </div>
 
-    <div class="loader" id="loader">✨ Generando tus posts con IA...</div>
+    <div class="loader" id="loader">
+      <div class="loader-dots">
+        <span></span><span></span><span></span>
+      </div>
+      <p>Generando tu contenido con IA...</p>
+    </div>
 
-    <div class="resultado" id="resultado"></div>
+    <div class="resultado" id="resultado">
+      <div class="resultado-header">
+        <h3>✅ Tus posts están listos</h3>
+        <button class="copiar" id="btnCopiar">📋 Copiar todo</button>
+      </div>
+      <div id="resultado-texto"></div>
+    </div>
   </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <p><strong>PostIA</strong> — Generador de contenido con inteligencia artificial</p>
+    <p style="margin-top: 8px;">¿Querés usar PostIA para tu negocio? <a href="mailto:tu@email.com">Contactanos</a></p>
+  </footer>
 
   <script>
     let redesSeleccionadas = [];
@@ -76,6 +329,7 @@
       const btn = document.querySelector('.generar');
       const loader = document.getElementById('loader');
       const resultado = document.getElementById('resultado');
+      const resultadoTexto = document.getElementById('resultado-texto');
 
       btn.disabled = true;
       loader.style.display = 'block';
@@ -93,21 +347,19 @@
         });
 
         const data = await response.json();
-        resultado.textContent = data.resultado;
+        resultadoTexto.textContent = data.resultado;
         resultado.style.display = 'block';
 
-        const copiar = document.createElement('button');
-        copiar.className = 'copiar';
-        copiar.textContent = '📋 Copiar todo';
-        copiar.onclick = () => {
+        document.getElementById('btnCopiar').onclick = () => {
           navigator.clipboard.writeText(data.resultado);
-          copiar.textContent = '✅ ¡Copiado!';
-          setTimeout(() => copiar.textContent = '📋 Copiar todo', 2000);
+          document.getElementById('btnCopiar').textContent = '✅ ¡Copiado!';
+          setTimeout(() => document.getElementById('btnCopiar').textContent = '📋 Copiar todo', 2000);
         };
-        resultado.appendChild(copiar);
+
+        resultado.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
       } catch (e) {
-        alert('Hubo un error. Revisá que el servidor esté corriendo.');
+        alert('Hubo un error. Intentá de nuevo.');
       } finally {
         btn.disabled = false;
         loader.style.display = 'none';
