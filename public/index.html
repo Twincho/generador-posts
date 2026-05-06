@@ -58,6 +58,7 @@
       min-width: 200px;
       max-width: 260px;
       text-align: center;
+      box-sizing: border-box;
       box-shadow: 0 2px 16px rgba(0,0,0,0.06);
       border: 1px solid #f0f0f5;
     }
@@ -217,8 +218,75 @@
       padding: 16px 20px;
       font-size: 14px;
       font-weight: 600;
-      display: none;
     }
+
+    /* PAYWALL */
+    .paywall {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .paywall.activo { display: flex; }
+    .paywall-card {
+      background: white;
+      border-radius: 24px;
+      padding: 40px;
+      max-width: 460px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    .paywall-card .emoji { font-size: 3rem; margin-bottom: 16px; }
+    .paywall-card h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 12px; color: #1a1a2e; }
+    .paywall-card p { color: #64748b; line-height: 1.6; margin-bottom: 24px; font-size: 15px; }
+    .paywall-precio {
+      background: #f8f9fc;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+    .paywall-precio .precio { font-size: 2.5rem; font-weight: 800; color: #7c73ff; }
+    .paywall-precio .periodo { color: #64748b; font-size: 14px; margin-top: 4px; }
+    .paywall-features { text-align: left; margin-bottom: 28px; }
+    .paywall-features li {
+      list-style: none;
+      padding: 6px 0;
+      color: #374151;
+      font-size: 15px;
+    }
+    .paywall-features li::before { content: '✅ '; }
+    .btn-pagar {
+      display: block;
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #7c73ff, #4ecdc4);
+      color: white;
+      border: none;
+      border-radius: 14px;
+      font-size: 17px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      font-family: 'Inter', sans-serif;
+      transition: opacity 0.2s;
+    }
+    .btn-pagar:hover { opacity: 0.9; }
+    .btn-cerrar {
+      display: block;
+      margin-top: 12px;
+      color: #94a3b8;
+      font-size: 13px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-family: 'Inter', sans-serif;
+    }
+    .btn-cerrar:hover { color: #64748b; }
 
     /* FOOTER */
     footer {
@@ -313,15 +381,33 @@
     <p style="margin-top: 8px;">¿Querés usar PostIA para tu negocio? <a href="mailto:tu@email.com">Contactanos</a></p>
   </footer>
 
+  <!-- PAYWALL -->
+  <div class="paywall" id="paywall">
+    <div class="paywall-card">
+      <div class="emoji">🚀</div>
+      <h2>Seguí generando con PostIA</h2>
+      <p>Usaste tus 3 generaciones gratuitas. Suscribite para tener acceso ilimitado.</p>
+      <div class="paywall-precio">
+        <div class="precio">$5.000</div>
+        <div class="periodo">pesos argentinos / mes</div>
+      </div>
+      <ul class="paywall-features">
+        <li>Generaciones ilimitadas</li>
+        <li>Todas las redes sociales</li>
+        <li>Posts con emojis y hashtags</li>
+        <li>Soporte por WhatsApp</li>
+      </ul>
+      <a href="https://mpago.la/2xH9d7L" target="_blank" class="btn-pagar">💳 Suscribirme ahora</a>
+      <button class="btn-cerrar" onclick="document.getElementById('paywall').classList.remove('activo')">Volver a la app</button>
+    </div>
+  </div>
+
   <script>
     let redesSeleccionadas = [];
     let generacionesUsadas = parseInt(localStorage.getItem('generaciones') || '0');
     const LIMITE_GRATIS = 3;
 
-    // Mostrar banner y estado inicial
-    const banner = document.getElementById('bannerLimite');
     const restantes = document.getElementById('generacionesRestantes');
-    banner.style.display = 'block';
     restantes.textContent = Math.max(0, LIMITE_GRATIS - generacionesUsadas);
 
     if (generacionesUsadas >= LIMITE_GRATIS) {
@@ -343,7 +429,7 @@
       if (redesSeleccionadas.length === 0) { alert('Seleccioná al menos una red social'); return; }
 
       if (generacionesUsadas >= LIMITE_GRATIS) {
-        alert('🔒 Agotaste tus 3 generaciones gratuitas.\n\nPronto podrás suscribirte para uso ilimitado. ¡Gracias por probar PostIA!');
+        document.getElementById('paywall').classList.add('activo');
         return;
       }
 
