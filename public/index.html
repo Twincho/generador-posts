@@ -9,7 +9,6 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Inter', sans-serif; background: #f8f9fc; color: #1a1a2e; }
 
-    /* HERO */
     .hero {
       background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
       padding: 60px 20px 80px;
@@ -40,7 +39,6 @@
       line-height: 1.6;
     }
 
-    /* BENEFICIOS */
     .benefits {
       display: flex;
       justify-content: center;
@@ -58,7 +56,6 @@
       min-width: 200px;
       max-width: 260px;
       text-align: center;
-      box-sizing: border-box;
       box-shadow: 0 2px 16px rgba(0,0,0,0.06);
       border: 1px solid #f0f0f5;
     }
@@ -66,7 +63,6 @@
     .benefit-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
     .benefit-card p { font-size: 0.875rem; color: #64748b; line-height: 1.5; }
 
-    /* FORMULARIO */
     .form-section {
       max-width: 680px;
       margin: 0 auto;
@@ -124,11 +120,7 @@
       font-family: 'Inter', sans-serif;
     }
     .red-btn:hover { border-color: #7c73ff; color: #7c73ff; }
-    .red-btn.activo {
-      border-color: #7c73ff;
-      background: #7c73ff;
-      color: white;
-    }
+    .red-btn.activo { border-color: #7c73ff; background: #7c73ff; color: white; }
     button.generar {
       width: 100%;
       padding: 16px;
@@ -148,18 +140,8 @@
     button.generar:active { transform: translateY(0); }
     button.generar:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
-    /* LOADER */
-    .loader {
-      text-align: center;
-      padding: 30px;
-      display: none;
-    }
-    .loader-dots {
-      display: inline-flex;
-      gap: 6px;
-      align-items: center;
-      margin-bottom: 10px;
-    }
+    .loader { text-align: center; padding: 30px; display: none; }
+    .loader-dots { display: inline-flex; gap: 6px; align-items: center; margin-bottom: 10px; }
     .loader-dots span {
       width: 10px; height: 10px;
       background: #7c73ff;
@@ -174,7 +156,6 @@
     }
     .loader p { color: #7c73ff; font-weight: 600; font-size: 15px; }
 
-    /* RESULTADO */
     .resultado {
       background: white;
       border-radius: 20px;
@@ -210,7 +191,6 @@
     }
     .copiar:hover { background: #e0e0ea; }
 
-    /* BANNER LIMITE */
     .banner-limite {
       background: linear-gradient(135deg, #7c73ff, #4ecdc4);
       color: white;
@@ -220,7 +200,6 @@
       font-weight: 600;
     }
 
-    /* PAYWALL */
     .paywall {
       display: none;
       position: fixed;
@@ -244,21 +223,11 @@
     .paywall-card .emoji { font-size: 3rem; margin-bottom: 16px; }
     .paywall-card h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 12px; color: #1a1a2e; }
     .paywall-card p { color: #64748b; line-height: 1.6; margin-bottom: 24px; font-size: 15px; }
-    .paywall-precio {
-      background: #f8f9fc;
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 24px;
-    }
+    .paywall-precio { background: #f8f9fc; border-radius: 16px; padding: 20px; margin-bottom: 24px; }
     .paywall-precio .precio { font-size: 2.5rem; font-weight: 800; color: #7c73ff; }
     .paywall-precio .periodo { color: #64748b; font-size: 14px; margin-top: 4px; }
     .paywall-features { text-align: left; margin-bottom: 28px; }
-    .paywall-features li {
-      list-style: none;
-      padding: 6px 0;
-      color: #374151;
-      font-size: 15px;
-    }
+    .paywall-features li { list-style: none; padding: 6px 0; color: #374151; font-size: 15px; }
     .paywall-features li::before { content: '✅ '; }
     .btn-pagar {
       display: block;
@@ -288,7 +257,6 @@
     }
     .btn-cerrar:hover { color: #64748b; }
 
-    /* FOOTER */
     footer {
       background: #1a1a2e;
       color: #64748b;
@@ -297,29 +265,22 @@
       font-size: 14px;
     }
     footer strong { color: #a89cff; }
-    footer a {
-      color: #7c73ff;
-      text-decoration: none;
-      font-weight: 600;
-    }
+    footer a { color: #7c73ff; text-decoration: none; font-weight: 600; }
     footer a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
 
-  <!-- HERO -->
   <div class="hero">
     <img src="/PostIA-logo.png" alt="PostIA" style="height: 80px; margin-bottom: 20px;">
     <h1>Creá posts que <span>venden</span><br>en segundos</h1>
     <p>Describí tu negocio y nuestra IA genera contenido listo para publicar en Instagram, Facebook, LinkedIn y más.</p>
   </div>
 
-  <!-- BANNER LIMITE -->
   <div class="banner-limite" id="bannerLimite">
     🎁 Estás usando la versión gratuita — <span id="generacionesRestantes">3</span> generaciones disponibles
   </div>
 
-  <!-- BENEFICIOS -->
   <div class="benefits">
     <div class="benefit-card">
       <div class="icon">⚡</div>
@@ -338,7 +299,6 @@
     </div>
   </div>
 
-  <!-- FORMULARIO -->
   <div class="form-section">
     <h2 class="form-title">Generá tu contenido ahora</h2>
     <div class="card">
@@ -375,20 +335,18 @@
     </div>
   </div>
 
-  <!-- FOOTER -->
   <footer>
     <p><strong>PostIA</strong> — Generador de contenido con inteligencia artificial</p>
     <p style="margin-top: 8px;">¿Querés usar PostIA para tu negocio? <a href="mailto:tu@email.com">Contactanos</a></p>
   </footer>
 
-  <!-- PAYWALL -->
   <div class="paywall" id="paywall">
     <div class="paywall-card">
       <div class="emoji">🚀</div>
       <h2>Seguí generando con PostIA</h2>
       <p>Usaste tus 3 generaciones gratuitas. Suscribite para tener acceso ilimitado.</p>
       <div class="paywall-precio">
-        <div class="precio">$5.000</div>
+        <div class="precio">$3.500</div>
         <div class="periodo">pesos argentinos / mes</div>
       </div>
       <ul class="paywall-features">
@@ -404,15 +362,23 @@
 
   <script>
     let redesSeleccionadas = [];
-    let generacionesUsadas = parseInt(localStorage.getItem('generaciones') || '0');
+    let generacionesUsadas = 0;
     const LIMITE_GRATIS = 3;
 
     const restantes = document.getElementById('generacionesRestantes');
-    restantes.textContent = Math.max(0, LIMITE_GRATIS - generacionesUsadas);
 
-    if (generacionesUsadas >= LIMITE_GRATIS) {
-      document.querySelector('.generar').textContent = '🔒 Suscribite para continuar';
+    async function verificarLimite() {
+      try {
+        const res = await fetch('/check-limite');
+        const data = await res.json();
+        generacionesUsadas = data.usadas;
+        restantes.textContent = Math.max(0, LIMITE_GRATIS - generacionesUsadas);
+        if (data.bloqueado) {
+          document.querySelector('.generar').textContent = '🔒 Suscribite para continuar';
+        }
+      } catch (e) {}
     }
+    verificarLimite();
 
     function toggleRed(btn, red) {
       btn.classList.toggle('activo');
@@ -453,6 +419,11 @@
           })
         });
 
+        if (response.status === 403) {
+          document.getElementById('paywall').classList.add('activo');
+          return;
+        }
+
         const data = await response.json();
         resultadoTexto.textContent = data.resultado;
         resultado.style.display = 'block';
@@ -463,8 +434,7 @@
           setTimeout(() => document.getElementById('btnCopiar').textContent = '📋 Copiar todo', 2000);
         };
 
-        generacionesUsadas++;
-        localStorage.setItem('generaciones', generacionesUsadas);
+        generacionesUsadas = data.usadas;
         restantes.textContent = Math.max(0, LIMITE_GRATIS - generacionesUsadas);
 
         if (generacionesUsadas >= LIMITE_GRATIS) {
