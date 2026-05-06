@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generador de Posts con IA</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; min-height: 100vh; padding: 30px 20px; }
+    .container { max-width: 700px; margin: 0 auto; }
+    h1 { text-align: center; color: #1a1a2e; margin-bottom: 8px; font-size: 2rem; }
+    .subtitle { text-align: center; color: #666; margin-bottom: 30px; }
+    .card { background: white; border-radius: 16px; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-bottom: 20px; }
+    label { display: block; font-weight: 600; color: #333; margin-bottom: 6px; margin-top: 18px; }
+    label:first-child { margin-top: 0; }
+    input, textarea { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 15px; transition: border 0.2s; }
+    input:focus, textarea:focus { outline: none; border-color: #6c63ff; }
+    textarea { height: 100px; resize: vertical; }
+    .redes { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 6px; }
+    .red-btn { padding: 8px 16px; border: 2px solid #e0e0e0; border-radius: 20px; cursor: pointer; font-size: 14px; background: white; transition: all 0.2s; }
+    .red-btn.activo { border-color: #6c63ff; background: #6c63ff; color: white; }
+    button.generar { width: 100%; padding: 15px; background: linear-gradient(135deg, #6c63ff, #4ecdc4); color: white; border: none; border-radius: 12px; font-size: 17px; font-weight: 700; cursor: pointer; margin-top: 24px; transition: opacity 0.2s; }
+    button.generar:hover { opacity: 0.9; }
+    button.generar:disabled { opacity: 0.6; cursor: not-allowed; }
+    .resultado { background: white; border-radius: 16px; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); white-space: pre-wrap; line-height: 1.7; color: #333; display: none; }
+    .copiar { margin-top: 16px; padding: 10px 20px; background: #f0f2f5; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600; }
+    .copiar:hover { background: #e0e0e0; }
+    .loader { text-align: center; color: #6c63ff; font-weight: 600; display: none; padding: 20px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>✨ Generador de Posts</h1>
+    <p class="subtitle">Creá contenido para tus redes en segundos con IA</p>
+
+    <div class="card">
+      <label>¿Cuál es tu negocio?</label>
+      <input type="text" id="negocio" placeholder="Ej: Cafetería artesanal, Estudio de yoga, Tienda de ropa...">
+
+      <label>Contanos más (opcional)</label>
+      <textarea id="descripcion" placeholder="Ej: Tenemos café de especialidad, somos pet-friendly, estamos en Palermo..."></textarea>
+
+      <label>¿Para qué redes querés los posts?</label>
+      <div class="redes">
+        <button class="red-btn" onclick="toggleRed(this, 'Instagram')">📸 Instagram</button>
+        <button class="red-btn" onclick="toggleRed(this, 'Facebook')">👥 Facebook</button>
+        <button class="red-btn" onclick="toggleRed(this, 'LinkedIn')">💼 LinkedIn</button>
+        <button class="red-btn" onclick="toggleRed(this, 'Twitter/X')">🐦 Twitter/X</button>
+      </div>
+
+      <button class="generar" onclick="generar()">🚀 Generar posts</button>
+    </div>
+
+    <div class="loader" id="loader">✨ Generando tus posts con IA...</div>
+
+    <div class="resultado" id="resultado"></div>
+  </div>
+
+  <script>
+    let redesSeleccionadas = [];
+
+    function toggleRed(btn, red) {
+      btn.classList.toggle('activo');
+      if (redesSeleccionadas.includes(red)) {
+        redesSeleccionadas = redesSeleccionadas.filter(r => r !== red);
+      } else {
+        redesSeleccionadas.push(red);
+      }
+    }
+
+    async function generar() {
+      const negocio = document.getElementById('negocio').value.trim();
+      if (!negocio) { alert('Ingresá el nombre o tipo de negocio'); return; }
+      if (redesSeleccionadas.length === 0) { alert('Seleccioná al menos una red social'); return; }
+
+      const btn = document.querySelector('.generar');
+      const loader = document.getElementById('loader');
+      const resultado = document.getElementById('resultado');
+
+      btn.disabled = true;
+      loader.style.display = 'block';
+      resultado.style.display = 'none';
+
+      try {
+        const response = await fetch('/generar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            negocio,
+            descripcion: document.getElementById('descripcion').value,
+            redes: redesSeleccionadas
+          })
+        });
+
+        const data = await response.json();
+        resultado.textContent = data.resultado;
+        resultado.style.display = 'block';
+
+        const copiar = document.createElement('button');
+        copiar.className = 'copiar';
+        copiar.textContent = '📋 Copiar todo';
+        copiar.onclick = () => {
+          navigator.clipboard.writeText(data.resultado);
+          copiar.textContent = '✅ ¡Copiado!';
+          setTimeout(() => copiar.textContent = '📋 Copiar todo', 2000);
+        };
+        resultado.appendChild(copiar);
+
+      } catch (e) {
+        alert('Hubo un error. Revisá que el servidor esté corriendo.');
+      } finally {
+        btn.disabled = false;
+        loader.style.display = 'none';
+      }
+    }
+  </script>
+</body>
+</html>
