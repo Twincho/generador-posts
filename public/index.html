@@ -200,6 +200,40 @@
       font-weight: 600;
     }
 
+    .banner-pago {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+      text-align: center;
+      padding: 16px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      display: none;
+    }
+
+    .email-acceso {
+      background: #f0fdf4;
+      border: 2px solid #10b981;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      display: none;
+    }
+    .email-acceso p { font-size: 14px; color: #065f46; margin-bottom: 10px; font-weight: 600; }
+    .email-acceso-form { display: flex; gap: 10px; }
+    .email-acceso-form input { margin: 0; }
+    .btn-verificar {
+      padding: 14px 20px;
+      background: #10b981;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      white-space: nowrap;
+    }
+
     .paywall {
       display: none;
       position: fixed;
@@ -243,8 +277,23 @@
       text-decoration: none;
       font-family: 'Inter', sans-serif;
       transition: opacity 0.2s;
+      margin-bottom: 12px;
     }
     .btn-pagar:hover { opacity: 0.9; }
+    .paywall-email { display: flex; gap: 10px; margin-top: 16px; }
+    .paywall-email input { margin: 0; font-size: 14px; }
+    .btn-ya-pague {
+      padding: 14px 16px;
+      background: #f0f0f5;
+      border: none;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      white-space: nowrap;
+      color: #374151;
+    }
     .btn-cerrar {
       display: block;
       margin-top: 12px;
@@ -254,6 +303,8 @@
       background: none;
       border: none;
       font-family: 'Inter', sans-serif;
+      width: 100%;
+      text-align: center;
     }
     .btn-cerrar:hover { color: #64748b; }
 
@@ -281,6 +332,10 @@
     🎁 Estás usando la versión gratuita — <span id="generacionesRestantes">3</span> generaciones disponibles
   </div>
 
+  <div class="banner-pago" id="bannerPago">
+    ✅ Suscripción activa — Generaciones ilimitadas 🚀
+  </div>
+
   <div class="benefits">
     <div class="benefit-card">
       <div class="icon">⚡</div>
@@ -301,6 +356,15 @@
 
   <div class="form-section">
     <h2 class="form-title">Generá tu contenido ahora</h2>
+
+    <div class="email-acceso" id="emailAcceso">
+      <p>🔑 ¿Ya sos suscriptor? Ingresá tu email para acceso ilimitado</p>
+      <div class="email-acceso-form">
+        <input type="email" id="emailSuscriptor" placeholder="tu@email.com">
+        <button class="btn-verificar" onclick="verificarEmail()">Verificar</button>
+      </div>
+    </div>
+
     <div class="card">
       <label>¿Cuál es tu negocio?</label>
       <input type="text" id="negocio" placeholder="Ej: Cafetería artesanal, Estudio de yoga, Tienda de ropa...">
@@ -356,6 +420,11 @@
         <li>Soporte por WhatsApp</li>
       </ul>
       <a href="https://mpago.la/2xH9d7L" target="_blank" class="btn-pagar">💳 Suscribirme ahora</a>
+      <p style="font-size: 13px; color: #94a3b8; margin-bottom: 8px;">¿Ya pagaste? Ingresá tu email para activar:</p>
+      <div class="paywall-email">
+        <input type="email" id="emailPaywall" placeholder="tu@email.com">
+        <button class="btn-ya-pague" onclick="verificarEmailPaywall()">✓ Activar</button>
+      </div>
       <button class="btn-cerrar" onclick="document.getElementById('paywall').classList.remove('activo')">Volver a la app</button>
     </div>
   </div>
@@ -363,11 +432,27 @@
   <script>
     let redesSeleccionadas = [];
     let generacionesUsadas = 0;
+    let emailUsuario = localStorage.getItem('emailUsuario') || '';
+    let accesoIlimitado = false;
     const LIMITE_GRATIS = 3;
 
     const restantes = document.getElementById('generacionesRestantes');
 
     async function verificarLimite() {
+      // Si tiene email guardado, verificar acceso
+      if (emailUsuario) {
+        const res = await fetch('/verificar-acceso', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: emailUsuario })
+        });
+        const data = await res.json();
+        if (data.acceso) {
+          activarAccesoIlimitado();
+          return;
+        }
+      }
+
       try {
         const res = await fetch('/check-limite');
         const data = await res.json();
@@ -375,9 +460,56 @@
         restantes.textContent = Math.max(0, LIMITE_GRATIS - generacionesUsadas);
         if (data.bloqueado) {
           document.querySelector('.generar').textContent = '🔒 Suscribite para continuar';
+          document.getElementById('emailAcceso').style.display = 'block';
         }
       } catch (e) {}
     }
+
+    function activarAccesoIlimitado() {
+      accesoIlimitado = true;
+      document.getElementById('bannerLimite').style.display = 'none';
+      document.getElementById('bannerPago').style.display = 'block';
+      document.getElementById('emailAcceso').style.display = 'none';
+      document.getElementById('paywall').classList.remove('activo');
+      document.querySelector('.generar').textContent = '🚀 Generar posts con IA';
+    }
+
+    async function verificarEmail() {
+      const email = document.getElementById('emailSuscriptor').value.trim();
+      if (!email) return;
+      emailUsuario = email;
+      localStorage.setItem('emailUsuario', email);
+      const res = await fetch('/verificar-acceso', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      const data = await res.json();
+      if (data.acceso) {
+        activarAccesoIlimitado();
+      } else {
+        alert('No encontramos una suscripción activa para ese email. Si acabás de pagar, esperá unos minutos e intentá de nuevo.');
+      }
+    }
+
+    async function verificarEmailPaywall() {
+      const email = document.getElementById('emailPaywall').value.trim();
+      if (!email) return;
+      emailUsuario = email;
+      localStorage.setItem('emailUsuario', email);
+      const res = await fetch('/verificar-acceso', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      const data = await res.json();
+      if (data.acceso) {
+        activarAccesoIlimitado();
+      } else {
+        alert('No encontramos una suscripción activa para ese email. Si acabás de pagar, esperá unos minutos e intentá de nuevo.');
+      }
+    }
+
     verificarLimite();
 
     function toggleRed(btn, red) {
@@ -394,7 +526,7 @@
       if (!negocio) { alert('Ingresá el nombre o tipo de negocio'); return; }
       if (redesSeleccionadas.length === 0) { alert('Seleccioná al menos una red social'); return; }
 
-      if (generacionesUsadas >= LIMITE_GRATIS) {
+      if (!accesoIlimitado && generacionesUsadas >= LIMITE_GRATIS) {
         document.getElementById('paywall').classList.add('activo');
         return;
       }
@@ -415,7 +547,8 @@
           body: JSON.stringify({
             negocio,
             descripcion: document.getElementById('descripcion').value,
-            redes: redesSeleccionadas
+            redes: redesSeleccionadas,
+            email: emailUsuario
           })
         });
 
@@ -434,11 +567,13 @@
           setTimeout(() => document.getElementById('btnCopiar').textContent = '📋 Copiar todo', 2000);
         };
 
-        generacionesUsadas = data.usadas;
-        restantes.textContent = Math.max(0, LIMITE_GRATIS - generacionesUsadas);
-
-        if (generacionesUsadas >= LIMITE_GRATIS) {
-          btn.textContent = '🔒 Suscribite para continuar';
+        if (!accesoIlimitado) {
+          generacionesUsadas = data.usadas;
+          restantes.textContent = Math.max(0, LIMITE_GRATIS - generacionesUsadas);
+          if (generacionesUsadas >= LIMITE_GRATIS) {
+            btn.textContent = '🔒 Suscribite para continuar';
+            document.getElementById('emailAcceso').style.display = 'block';
+          }
         }
 
         resultado.scrollIntoView({ behavior: 'smooth', block: 'start' });
