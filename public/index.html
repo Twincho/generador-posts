@@ -24,18 +24,6 @@
       background: radial-gradient(circle, rgba(108,99,255,0.15) 0%, transparent 70%);
       top: -200px; left: 50%; transform: translateX(-50%);
     }
-    .badge {
-      display: inline-block;
-      background: rgba(108,99,255,0.2);
-      border: 1px solid rgba(108,99,255,0.4);
-      color: #a89cff;
-      padding: 6px 16px;
-      border-radius: 20px;
-      font-size: 13px;
-      font-weight: 600;
-      margin-bottom: 20px;
-      letter-spacing: 0.5px;
-    }
     .hero h1 {
       font-size: 2.8rem;
       font-weight: 800;
@@ -221,6 +209,17 @@
     }
     .copiar:hover { background: #e0e0ea; }
 
+    /* BANNER LIMITE */
+    .banner-limite {
+      background: linear-gradient(135deg, #7c73ff, #4ecdc4);
+      color: white;
+      text-align: center;
+      padding: 16px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      display: none;
+    }
+
     /* FOOTER */
     footer {
       background: #1a1a2e;
@@ -245,6 +244,11 @@
     <img src="/PostIA-logo.png" alt="PostIA" style="height: 80px; margin-bottom: 20px;">
     <h1>Creá posts que <span>venden</span><br>en segundos</h1>
     <p>Describí tu negocio y nuestra IA genera contenido listo para publicar en Instagram, Facebook, LinkedIn y más.</p>
+  </div>
+
+  <!-- BANNER LIMITE -->
+  <div class="banner-limite" id="bannerLimite">
+    🎁 Estás usando la versión gratuita — <span id="generacionesRestantes">3</span> generaciones disponibles
   </div>
 
   <!-- BENEFICIOS -->
@@ -311,6 +315,18 @@
 
   <script>
     let redesSeleccionadas = [];
+    let generacionesUsadas = parseInt(localStorage.getItem('generaciones') || '0');
+    const LIMITE_GRATIS = 3;
+
+    // Mostrar banner y estado inicial
+    const banner = document.getElementById('bannerLimite');
+    const restantes = document.getElementById('generacionesRestantes');
+    banner.style.display = 'block';
+    restantes.textContent = Math.max(0, LIMITE_GRATIS - generacionesUsadas);
+
+    if (generacionesUsadas >= LIMITE_GRATIS) {
+      document.querySelector('.generar').textContent = '🔒 Suscribite para continuar';
+    }
 
     function toggleRed(btn, red) {
       btn.classList.toggle('activo');
@@ -325,6 +341,11 @@
       const negocio = document.getElementById('negocio').value.trim();
       if (!negocio) { alert('Ingresá el nombre o tipo de negocio'); return; }
       if (redesSeleccionadas.length === 0) { alert('Seleccioná al menos una red social'); return; }
+
+      if (generacionesUsadas >= LIMITE_GRATIS) {
+        alert('🔒 Agotaste tus 3 generaciones gratuitas.\n\nPronto podrás suscribirte para uso ilimitado. ¡Gracias por probar PostIA!');
+        return;
+      }
 
       const btn = document.querySelector('.generar');
       const loader = document.getElementById('loader');
@@ -355,6 +376,14 @@
           document.getElementById('btnCopiar').textContent = '✅ ¡Copiado!';
           setTimeout(() => document.getElementById('btnCopiar').textContent = '📋 Copiar todo', 2000);
         };
+
+        generacionesUsadas++;
+        localStorage.setItem('generaciones', generacionesUsadas);
+        restantes.textContent = Math.max(0, LIMITE_GRATIS - generacionesUsadas);
+
+        if (generacionesUsadas >= LIMITE_GRATIS) {
+          btn.textContent = '🔒 Suscribite para continuar';
+        }
 
         resultado.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
