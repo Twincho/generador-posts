@@ -8,7 +8,27 @@ app.use(express.static("public"));
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
+const LIMITE_GRATIS = 3;
+const contadorIPs = {};
+
+function obtenerIP(req) {
+  return req.headers['x-forwarded-for']?.split(',')[0] || req.socket.remoteAddress;
+}
+
+app.get("/check-limite", (req, res) => {
+  const ip = obtenerIP(req);
+  const usadas = contadorIPs[ip] || 0;
+  res.json({ usadas, limite: LIMITE_GRATIS, bloqueado: usadas >= LIMITE_GRATIS });
+});
+
 app.post("/generar", async (req, res) => {
+  const ip = obtenerIP(req);
+  const usadas = contadorIPs[ip] || 0;
+
+  if (usadas >= LIMITE_GRATIS) {
+    return res.status(403).json({ error: "limite_alcanzado" });
+  }
+
   const { negocio, descripcion, redes } = req.body;
 
   const prompt = `Sos un experto en marketing digital y redes sociales para negocios latinoamericanos.
@@ -31,7 +51,14 @@ Formato de respuesta:
       model: "llama-3.3-70b-versatile",
     });
     const text = completion.choices[0].message.content;
-    res.json({ resultado: text });
+
+    contadorIPs[ip] = usadas + 1;
+
+    res.json({ 
+      resultado: text,
+      usadas: contadorIPs[ip],
+      limite: LIMITE_GRATIS
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error al generar los posts" });
